@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nodi — Una propuesta</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f4f0;
+    --gray: #888;
+    --mid: #222;
+    --border: rgba(255,255,255,0.1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--white);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, width 0.2s, height 0.2s;
+    mix-blend-mode: difference;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 48px;
+    border-bottom: 0.5px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(10,10,10,0.8);
+  }
+
+  nav .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+  }
+
+  nav .nav-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+  }
+
+  /* Sections */
+  section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 48px 80px;
+    border-bottom: 0.5px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.15em;
+    margin-bottom: 48px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .slide-num.visible { opacity: 1; transform: translateY(0); }
+
+  /* Slide 1 — Hook */
+  #s1 { background: var(--black); }
+
+  .big-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(80px, 16vw, 200px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s ease 0.1s, transform 0.9s ease 0.1s;
+  }
+
+  .big-num.visible { opacity: 1; transform: translateY(0); }
+
+  .big-num span {
+    font-style: italic;
+    color: var(--gray);
+  }
+
+  .s1-sub {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 48px;
+    max-width: 800px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
+  }
+
+  .s1-sub.visible { opacity: 1; transform: translateY(0); }
+
+  .s1-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  .s1-statement {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  /* Divider line animated */
+  .h-line {
+    width: 0;
+    height: 0.5px;
+    background: var(--border);
+    margin: 48px 0;
+    transition: width 1.2s ease 0.3s;
+  }
+  .h-line.visible { width: 100%; }
+
+  /* Slide 2 — Companies */
+  #s2 { background: var(--white); color: var(--black); }
+  #s2 .slide-num { color: #999; }
+
+  .companies-header {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #999;
+    margin-bottom: 64px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+  }
+  .companies-header.visible { opacity: 1; transform: translateY(0); }
+
+  .companies-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 0.5px solid #ddd;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s ease 0.3s, transform 0.9s ease 0.3s;
+  }
+  .companies-grid.visible { opacity: 1; transform: translateY(0); }
+
+  .company-card {
+    padding: 48px 40px;
+    border-right: 0.5px solid #ddd;
+  }
+  .company-card:last-child { border-right: none; }
+
+  .company-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--black);
+    margin-bottom: 8px;
+  }
+
+  .company-stat {
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px;
+    line-height: 1;
+    color: var(--black);
+    margin-bottom: 12px;
+  }
+
+  .company-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  .s2-footer {
+    margin-top: 48px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s;
+  }
+  .s2-footer.visible { opacity: 1; transform: translateY(0); }
+
+  .s2-line { flex: 1; height: 0.5px; background: #ccc; }
+
+  .s2-statement {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--black);
+    white-space: nowrap;
+  }
+
+  /* Slide 3 — Proposal */
+  #s3 { background: var(--black); }
+
+  .s3-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .s3-left {}
+
+  .s3-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    margin-bottom: 32px;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s;
+  }
+  .s3-title.visible { opacity: 1; transform: translateX(0); }
+
+  .s3-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.7;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
+  }
+  .s3-subtitle.visible { opacity: 1; transform: translateX(0); }
+
+  .s3-right {}
+
+  .s3-point {
+    padding: 28px 0;
+    border-bottom: 0.5px solid var(--border);
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .s3-point.visible { opacity: 1; transform: translateX(0); }
+  .s3-point:first-child { border-top: 0.5px solid var(--border); }
+
+  .s3-point-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+
+  .s3-point-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .s3-point-body {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  /* Slide 4 — CTA */
+  #s4 {
+    background: var(--black);
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .s4-top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .s4-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(60px, 12vw, 140px);
+    line-height: 0.95;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s ease 0.1s, transform 1s ease 0.1s;
+  }
+  .s4-name.visible { opacity: 1; transform: translateY(0); }
+
+  .s4-name em {
+    font-style: italic;
+    color: var(--gray);
+  }
+
+  .s4-meta {
+    display: flex;
+    gap: 48px;
+    margin-top: 48px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
+  }
+  .s4-meta.visible { opacity: 1; transform: translateY(0); }
+
+  .s4-meta-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  .s4-meta-item strong {
+    display: block;
+    color: var(--white);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .s4-cta {
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s;
+    width: fit-content;
+    padding: 24px 40px;
+    border: 0.5px solid var(--white);
+    cursor: none;
+  }
+  .s4-cta.visible { opacity: 1; transform: translateY(0); }
+  .s4-cta:hover { background: var(--white); color: var(--black); }
+  .s4-cta:hover .cta-arrow { transform: translateX(8px); }
+  .s4-cta { transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s, background 0.2s, color 0.2s; }
+
+  .cta-text {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .cta-arrow {
+    font-size: 24px;
+    transition: transform 0.2s ease;
+    line-height: 1;
+  }
+
+  /* Noise overlay for texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease 1.2s forwards;
+  }
+
+  .scroll-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gray);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Background grid for s3 */
+  #s3::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    section { padding: 100px 24px 60px; }
+    .s1-sub { grid-template-columns: 1fr; }
+    .companies-grid { grid-template-columns: 1fr; }
+    .company-card { border-right: none; border-bottom: 0.5px solid #ddd; }
+    .s3-layout { grid-template-columns: 1fr; gap: 40px; }
+    .s4-meta { flex-direction: column; gap: 24px; }
+    .scroll-hint { left: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<nav>
+  <div class="logo">JESÚS → NODI</div>
+  <div class="nav-num">UNA PROPUESTA</div>
+</nav>
+
+<!-- SLIDE 1: THE HOOK -->
+<section id="s1">
+  <div class="slide-num" data-animate>01 — EL PROBLEMA</div>
+
+  <div class="big-num" data-animate>
+    $50,000<span>/mes</span>
+  </div>
+
+  <div class="h-line" data-animate></div>
+
+  <div class="s1-sub" data-animate>
+    <div class="s1-label">
+      Cada búsqueda en Nodi llama a Vertex AI.<br>
+      Input tokens + output tokens.<br>
+      Cada. Búsqueda.
+    </div>
+    <div class="s1-statement">
+      A 1M búsquedas al mes,<br>el costo de API se come el margen.
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-dot"></div>
+    scroll
+  </div>
+</section>
+
+<!-- SLIDE 2: COMPANIES -->
+<section id="s2">
+  <div class="slide-num" data-animate style="color:#999;">02 — LA REFERENCIA</div>
+
+  <div class="companies-header" data-animate>LAS EMPRESAS QUE DOMINAN EL MATCHING NO USAN LLMS</div>
+
+  <div class="companies-grid" data-animate>
+    <div class="company-card">
+      <div class="company-name">Spotify</div>
+      <div class="company-stat">600M</div>
+      <div class="company-desc">usuarios<br>recomendaciones en milisegundos<br>sin una sola llamada a API externa</div>
+    </div>
+    <div class="company-card">
+      <div class="company-name">Netflix</div>
+      <div class="company-stat">$1B</div>
+      <div class="company-desc">ahorrados / año<br>en reducción de churn<br>con ML propio</div>
+    </div>
+    <div class="company-card">
+      <div class="company-name">LinkedIn</div>
+      <div class="company-stat">1B+</div>
+      <div class="company-desc">conexiones sugeridas<br>con modelo de embeddings<br>sin tokens, sin APIs</div>
+    </div>
+  </div>
+
+  <div class="s2-footer" data-animate>
+    <div class="s2-line"></div>
+    <div class="s2-statement">Usan matemática. No APIs externas.</div>
+    <div class="s2-line"></div>
+  </div>
+</section>
+
+<!-- SLIDE 3: PROPOSAL -->
+<section id="s3">
+  <div class="slide-num" data-animate>03 — LA PROPUESTA</div>
+
+  <div class="s3-layout">
+    <div class="s3-left">
+      <div class="s3-title" data-animate>La propuesta<br>para Nodi</div>
+      <div class="s3-subtitle" data-animate>
+        Un modelo de ML entrenado<br>
+        con los datos propios de Nodi.<br><br>
+        Mismo resultado de matching,<br>
+        costo de API casi cero.
+      </div>
+    </div>
+
+    <div class="s3-right">
+      <div class="s3-point" data-animate data-delay="0.2">
+        <div class="s3-point-num">01</div>
+        <div class="s3-point-title">Embeddings</div>
+        <div class="s3-point-body">Candidatos y empresas como vectores matemáticos. Similaridad exacta, sin alucinaciones.</div>
+      </div>
+      <div class="s3-point" data-animate data-delay="0.35">
+        <div class="s3-point-num">02</div>
+        <div class="s3-point-title">Escala lineal</div>
+        <div class="s3-point-body">El costo de inferencia es fijo. No crece con el volumen de búsquedas.</div>
+      </div>
+      <div class="s3-point" data-animate data-delay="0.5">
+        <div class="s3-point-num">03</div>
+        <div class="s3-point-title">Propio y mejora solo</div>
+        <div class="s3-point-body">El modelo aprende de los matches de Nodi. Con cada contratación se vuelve más preciso.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: CTA -->
+<section id="s4">
+  <div class="slide-num" data-animate>04 — LA PROPUESTA</div>
+
+  <div class="s4-top">
+    <div class="s4-name" data-animate>
+      Soy<br>Jesús.<br><em>Data<br>Scientist.</em>
+    </div>
+
+    <div class="s4-meta" data-animate>
+      <div class="s4-meta-item">
+        <strong>Usuario beta</strong>
+        He probado el agente.<br>Entiendo el producto.
+      </div>
+      <div class="s4-meta-item">
+        <strong>El approach</strong>
+        ML propio, sin APIs externas.<br>Resolví esto matemáticamente.
+      </div>
+      <div class="s4-meta-item">
+        <strong>El timing</strong>
+        Prototipo funcional<br>en 2–3 semanas.
+      </div>
+    </div>
+
+    <div class="s4-cta" data-animate>
+      <div class="cta-text">¿Le damos 15 minutos esta semana?</div>
+      <div class="cta-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<script>
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX - 6 + 'px';
+  cursor.style.top = e.clientY - 6 + 'px';
+});
+
+document.querySelectorAll('a, button, .s4-cta, .company-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(3)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const delay = el.dataset.delay ? parseFloat(el.dataset.delay) * 1000 : 0;
+      setTimeout(() => el.classList.add('visible'), delay);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
