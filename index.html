@@ -344,6 +344,69 @@
     object-fit: contain;
   }
 
+  /* ===== SLIDE 07 — CTA ===== */
+  #s7 {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 64px;
+    background: #000000;
+  }
+
+  #s7-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  #s7::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+
+  #s7 > *:not(#s7-canvas) { position: relative; z-index: 2; }
+
+  .s7-title {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    margin-bottom: 28px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s ease 0.1s, transform 0.9s ease 0.1s;
+  }
+  .s7-title.visible { opacity: 1; transform: translateY(0); }
+
+  .s7-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 16px 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000000;
+    background: #ffffff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s, background 0.3s;
+  }
+  .s7-btn.visible { opacity: 1; transform: translateY(0); }
+  .s7-btn:hover { background: #b3e29a; }
+
   /* ===== NAV DOTS ===== */
   .side-nav {
     position: fixed;
@@ -421,6 +484,7 @@
   <a href="#s4" data-slide="s4"></a>
   <a href="#s5" data-slide="s5"></a>
   <a href="#s6" data-slide="s6"></a>
+  <a href="#s7" data-slide="s7"></a>
 </nav>
 
 <!-- SLIDE 01 -->
@@ -518,6 +582,13 @@
   </div>
 </section>
 
+<!-- SLIDE 07 — CTA -->
+<section id="s7">
+  <canvas id="s7-canvas"></canvas>
+  <div class="s7-title" data-animate>Ready to build smarter?</div>
+  <a href="https://calendly.com/jesus006255/30min" target="_blank" class="s7-btn" data-animate>Book a 15 min call</a>
+</section>
+
 <script>
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -590,6 +661,46 @@ sections.forEach(s => dotObs.observe(s));
 // Canvas gradient for Slide 02
 (function() {
   const canvas = document.getElementById('s2-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const blobs = [
+    { x: 0.3, y: 0.7, r: 0.4, vx: 0.0003, vy: -0.0002, alpha: 0.45 },
+    { x: 0.7, y: 0.2, r: 0.35, vx: -0.0004, vy: 0.0003, alpha: 0.35 },
+    { x: 0.5, y: 0.5, r: 0.3, vx: 0.0002, vy: 0.0004, alpha: 0.2 },
+  ];
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const b of blobs) {
+      b.x += b.vx;
+      b.y += b.vy;
+      if (b.x < 0.1 || b.x > 0.9) b.vx *= -1;
+      if (b.y < 0.1 || b.y > 0.9) b.vy *= -1;
+      const cx = b.x * canvas.width;
+      const cy = b.y * canvas.height;
+      const radius = b.r * Math.max(canvas.width, canvas.height);
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grad.addColorStop(0, `rgba(179, 226, 154, ${b.alpha})`);
+      grad.addColorStop(1, 'rgba(179, 226, 154, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+})();
+
+// Canvas gradient for Slide 07
+(function() {
+  const canvas = document.getElementById('s7-canvas');
   const ctx = canvas.getContext('2d');
 
   const blobs = [
