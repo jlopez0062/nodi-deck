@@ -330,6 +330,7 @@
   .s6-right {
     flex: 1.5;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     opacity: 0;
@@ -342,6 +343,60 @@
     width: 100%;
     max-height: 90vh;
     object-fit: contain;
+  }
+
+  .vv-match-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+    text-align: center;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s;
+  }
+  .vv-match-label.visible { opacity: 1; transform: translateY(0); }
+
+  .vector-viz {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .vector-viz svg { width: 100%; height: auto; }
+
+  .vv-grid {
+    opacity: 0;
+  }
+  .s6-right.visible .vv-grid {
+    animation: vvFadeIn 1s ease 0.3s forwards;
+  }
+
+  .vv-arrow {
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+  }
+  .s6-right.visible .vv-arrow-1 { animation: vvDraw 1s ease 0.8s forwards; }
+  .s6-right.visible .vv-arrow-2 { animation: vvDraw 1s ease 1.4s forwards; }
+  .s6-right.visible .vv-arrow-3 { animation: vvDraw 1s ease 2.0s forwards; }
+
+  .vv-arrowhead { opacity: 0; }
+  .s6-right.visible .vv-arrowhead.vv-arrow-1 { animation: vvFadeIn 0.3s ease 1.7s forwards; }
+  .s6-right.visible .vv-arrowhead.vv-arrow-2 { animation: vvFadeIn 0.3s ease 2.3s forwards; }
+  .s6-right.visible .vv-arrowhead.vv-arrow-3 { animation: vvFadeIn 0.3s ease 2.9s forwards; }
+
+  .vv-label { opacity: 0; }
+  .s6-right.visible .vv-label-1 { animation: vvFadeIn 0.5s ease 1.8s forwards; }
+  .s6-right.visible .vv-label-2 { animation: vvFadeIn 0.5s ease 2.4s forwards; }
+  .s6-right.visible .vv-label-3 { animation: vvFadeIn 0.5s ease 3.0s forwards; }
+
+  @keyframes vvDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes vvFadeIn {
+    to { opacity: 1; }
   }
 
   /* ===== SLIDE 07 — CTA ===== */
@@ -388,24 +443,63 @@
   .s7-title.visible { opacity: 1; transform: translateY(0); }
 
   .s7-btn {
+    position: relative;
     display: inline-block;
     margin-top: 20px;
-    padding: 16px 40px;
+    padding: 18px 48px;
     font-family: 'Montserrat', sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #000000;
-    background: #ffffff;
-    border: none;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.12) 100%);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border: 1px solid transparent;
     border-radius: 50px;
     cursor: pointer;
     text-decoration: none;
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.35),
+      inset 0 -1px 1px rgba(255,255,255,0.1),
+      0 4px 24px rgba(0,0,0,0.3),
+      0 0 0 0.5px rgba(255,255,255,0.15);
+    background-clip: padding-box;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s, background 0.3s;
+    transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s, box-shadow 0.3s;
+    overflow: hidden;
+  }
+  .s7-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.0) 60%, rgba(255,255,255,0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .s7-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 50%);
+    pointer-events: none;
   }
   .s7-btn.visible { opacity: 1; transform: translateY(0); }
-  .s7-btn:hover { background: #b3e29a; }
+  .s7-btn:hover {
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.4),
+      inset 0 -1px 1px rgba(255,255,255,0.15),
+      0 4px 32px rgba(179,226,154,0.25),
+      0 0 0 0.5px rgba(179,226,154,0.3);
+  }
 
   /* ===== NAV DOTS ===== */
   .side-nav {
@@ -578,7 +672,54 @@
     <div class="s6-sub s6-sub-2" data-typewrite data-type-delay="3000" data-type-speed="12">Better matching results, and more scalable. Near 0 API cost.</div>
   </div>
   <div class="s6-right" data-animate>
-    <img src="vector.png" alt="Vector">
+    <div class="vv-match-label" data-animate>85% match — Candidate to Job Offer 01</div>
+    <div class="vector-viz" id="vectorViz">
+      <svg viewBox="-10 0 540 520" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid -->
+        <g class="vv-grid" stroke="#1a1a1a" stroke-width="4">
+          <line x1="0" y1="83" x2="500" y2="83"/>
+          <line x1="0" y1="167" x2="500" y2="167"/>
+          <line x1="0" y1="250" x2="500" y2="250"/>
+          <line x1="0" y1="333" x2="500" y2="333"/>
+          <line x1="0" y1="417" x2="500" y2="417"/>
+          <line x1="83" y1="0" x2="83" y2="500"/>
+          <line x1="167" y1="0" x2="167" y2="500"/>
+          <line x1="250" y1="0" x2="250" y2="500"/>
+          <line x1="333" y1="0" x2="333" y2="500"/>
+          <line x1="417" y1="0" x2="417" y2="500"/>
+        </g>
+        <!-- Border -->
+        <rect class="vv-grid" x="1" y="1" width="498" height="498" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+
+        <!-- Candidate arrow (green, up) -->
+        <line class="vv-arrow vv-arrow-1" x1="250" y1="333" x2="250" y2="100" stroke="#b3e29a" stroke-width="4" stroke-linecap="round"/>
+        <polygon class="vv-arrowhead vv-arrow-1" points="250,85 242,105 258,105" fill="#b3e29a"/>
+        <!-- Glow on candidate arrow -->
+        <line class="vv-arrow vv-arrow-1" x1="250" y1="333" x2="250" y2="100" stroke="#b3e29a" stroke-width="12" stroke-linecap="round" opacity="0.15"/>
+
+        <!-- Job Offer 01 arrow (dark gray, diagonal up-right) -->
+        <line class="vv-arrow vv-arrow-2" x1="250" y1="333" x2="330" y2="110" stroke="#4d4d4d" stroke-width="4" stroke-linecap="round"/>
+        <polygon class="vv-arrowhead vv-arrow-2" points="335,95 322,112 340,118" fill="#4d4d4d"/>
+
+        <!-- Job Offer 02 arrow (gray, left) -->
+        <line class="vv-arrow vv-arrow-3" x1="250" y1="333" x2="90" y2="333" stroke="#4d4d4d" stroke-width="4" stroke-linecap="round"/>
+        <polygon class="vv-arrowhead vv-arrow-3" points="78,333 98,325 98,341" fill="#4d4d4d"/>
+
+        <!-- Labels -->
+        <text class="vv-label vv-label-1" x="140" y="90" fill="#b3e29a" font-family="Montserrat" font-size="14" font-weight="600">Candidate</text>
+        <text class="vv-label vv-label-2" x="345" y="100" fill="#ffffff" font-family="Montserrat" font-size="14" font-weight="500">Job Offer 01</text>
+        <text class="vv-label vv-label-3" x="80" y="365" fill="#ffffff" font-family="Montserrat" font-size="14" font-weight="500">Job Offer 02</text>
+
+        <!-- Bottom fade -->
+        <defs>
+          <linearGradient id="fadeBottom" x1="0" y1="0.7" x2="0" y2="1">
+            <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="350" width="500" height="150" fill="url(#fadeBottom)"/>
+      </svg>
+    </div>
   </div>
 </section>
 
