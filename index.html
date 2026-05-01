@@ -354,14 +354,27 @@
   /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
     #s1 { padding: 32px 24px; }
-    .s1-center { flex-direction: column-reverse; gap: 32px; }
-    .s1-left { max-width: 100%; }
+    .s1-center {
+      flex-direction: column;
+      gap: 32px;
+    }
+    .s1-left { max-width: 100%; text-align: left; }
+    .s1-right { justify-content: flex-start; }
+    .s1-right img { max-height: 40vh; }
 
     .split-slide, #s6 {
       flex-direction: column;
       padding: 48px 24px;
       gap: 40px;
     }
+
+    .split-left { text-align: left; }
+    .split-right { flex: unset; }
+    .split-right img { max-height: 50vh; }
+
+    .s6-left { text-align: left; }
+    .s6-right { flex: unset; }
+    .s6-right img { max-height: 50vh; }
 
     .side-nav { display: none; }
   }
@@ -447,9 +460,9 @@
 <!-- SLIDE 06 — RECSYS -->
 <section id="s6">
   <div class="s6-left" data-animate>
-    <div class="s6-title" data-typewrite>RecSys built for Nodi</div>
-    <div class="s6-sub s6-sub-1" data-typewrite data-type-delay="900">Candidate and Company profiles as vectors — mathematical search instead of LLM reasoning.</div>
-    <div class="s6-sub s6-sub-2" data-typewrite data-type-delay="4500">Better matching results, and more scalable. Near 0 API cost.</div>
+    <div class="s6-title" data-typewrite data-type-speed="40">RecSys built for Nodi</div>
+    <div class="s6-sub s6-sub-1" data-typewrite data-type-delay="900" data-type-speed="12">Candidate and Company profiles as vectors — mathematical search instead of LLM reasoning.</div>
+    <div class="s6-sub s6-sub-2" data-typewrite data-type-delay="2500" data-type-speed="12">Better matching results, and more scalable. Near 0 API cost.</div>
   </div>
   <div class="s6-right" data-animate>
     <img src="vector.png" alt="Vector">
@@ -611,10 +624,11 @@ const typeObserver = new IntersectionObserver((entries) => {
       const delay = parseInt(entry.target.dataset.typeDelay) || 0;
       let i = 0;
       setTimeout(() => {
+        const speed = parseInt(entry.target.dataset.typeSpeed) || 40;
         const interval = setInterval(() => {
           entry.target.textContent = text.slice(0, ++i);
           if (i >= text.length) clearInterval(interval);
-        }, 40);
+        }, speed);
       }, delay);
     }
   });
