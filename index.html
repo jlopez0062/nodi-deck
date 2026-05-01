@@ -1,600 +1,626 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nodi — Una propuesta</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<title>Nodi — RecSys</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --black: #0a0a0a;
-    --white: #f5f4f0;
-    --gray: #888;
-    --mid: #222;
-    --border: rgba(255,255,255,0.1);
-  }
 
   html { scroll-behavior: smooth; }
 
   body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'Syne', sans-serif;
+    background: #000000;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
     overflow-x: hidden;
-    cursor: none;
   }
 
-  /* Custom cursor */
-  .cursor {
-    width: 12px; height: 12px;
-    background: var(--white);
-    border-radius: 50%;
-    position: fixed;
-    top: 0; left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.15s ease, width 0.2s, height 0.2s;
-    mix-blend-mode: difference;
-  }
-
-  /* Nav */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 24px 48px;
-    border-bottom: 0.5px solid var(--border);
-    backdrop-filter: blur(12px);
-    background: rgba(10,10,10,0.8);
-  }
-
-  nav .logo {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    letter-spacing: 0.1em;
-    color: var(--gray);
-  }
-
-  nav .nav-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--gray);
-    letter-spacing: 0.05em;
-  }
-
-  /* Sections */
   section {
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 120px 48px 80px;
-    border-bottom: 0.5px solid var(--border);
     position: relative;
     overflow: hidden;
+    background: #000000;
   }
 
-  .slide-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--gray);
-    letter-spacing: 0.15em;
-    margin-bottom: 48px;
+  /* ===== SLIDE 01 ===== */
+  #s1 {
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 64px;
+    background: #000000;
+  }
+
+  #s1-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  #s1 > *:not(#s1-canvas) {
+    position: relative;
+    z-index: 1;
+  }
+
+  #s1::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+
+  #s1 > *:not(#s1-canvas):not(style) {
+    z-index: 2;
+  }
+
+  .s1-logo {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: translateY(-15px);
+    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
   }
+  .s1-logo.visible { opacity: 1; transform: translateY(0); }
+  .s1-logo img { height: 90px; object-fit: contain; }
 
-  .slide-num.visible { opacity: 1; transform: translateY(0); }
-
-  /* Slide 1 — Hook */
-  #s1 { background: var(--black); }
-
-  .big-num {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(80px, 16vw, 200px);
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    color: var(--white);
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.9s ease 0.1s, transform 0.9s ease 0.1s;
-  }
-
-  .big-num.visible { opacity: 1; transform: translateY(0); }
-
-  .big-num span {
-    font-style: italic;
-    color: var(--gray);
-  }
-
-  .s1-sub {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    margin-top: 48px;
-    max-width: 800px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
-  }
-
-  .s1-sub.visible { opacity: 1; transform: translateY(0); }
-
-  .s1-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--gray);
-    line-height: 1.6;
-  }
-
-  .s1-statement {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-
-  /* Divider line animated */
-  .h-line {
-    width: 0;
-    height: 0.5px;
-    background: var(--border);
-    margin: 48px 0;
-    transition: width 1.2s ease 0.3s;
-  }
-  .h-line.visible { width: 100%; }
-
-  /* Slide 2 — Companies */
-  #s2 { background: var(--white); color: var(--black); }
-  #s2 .slide-num { color: #999; }
-
-  .companies-header {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: #999;
-    margin-bottom: 64px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
-  }
-  .companies-header.visible { opacity: 1; transform: translateY(0); }
-
-  .companies-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border: 0.5px solid #ddd;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.9s ease 0.3s, transform 0.9s ease 0.3s;
-  }
-  .companies-grid.visible { opacity: 1; transform: translateY(0); }
-
-  .company-card {
-    padding: 48px 40px;
-    border-right: 0.5px solid #ddd;
-  }
-  .company-card:last-child { border-right: none; }
-
-  .company-name {
-    font-family: 'DM Serif Display', serif;
-    font-size: 36px;
-    color: var(--black);
-    margin-bottom: 8px;
-  }
-
-  .company-stat {
-    font-family: 'DM Serif Display', serif;
-    font-size: 72px;
-    line-height: 1;
-    color: var(--black);
-    margin-bottom: 12px;
-  }
-
-  .company-desc {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: #888;
-    line-height: 1.6;
-  }
-
-  .s2-footer {
-    margin-top: 48px;
+  .s1-center {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 24px;
+    justify-content: space-between;
+    gap: 80px;
+    padding: 40px 0;
+  }
+
+  .s1-left {
+    flex: 1;
+    max-width: 500px;
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+  }
+  .s1-left.visible { opacity: 1; transform: translateY(0); }
+
+  .s1-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    margin-bottom: 24px;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s;
+    transition: opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s;
   }
-  .s2-footer.visible { opacity: 1; transform: translateY(0); }
+  .s1-title.visible { opacity: 1; transform: translateY(0); }
 
-  .s2-line { flex: 1; height: 0.5px; background: #ccc; }
-
-  .s2-statement {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--black);
-    white-space: nowrap;
-  }
-
-  /* Slide 3 — Proposal */
-  #s3 { background: var(--black); }
-
-  .s3-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: start;
+  .s1-left p {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #999;
+    text-align: left;
   }
 
-  .s3-left {}
+  .s1-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.9s ease 0.3s, transform 0.9s ease 0.3s;
+  }
+  .s1-right.visible { opacity: 1; transform: translateX(0); }
+  .s1-right img { max-width: 100%; max-height: 65vh; object-fit: contain; }
 
-  .s3-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(40px, 6vw, 72px);
+  .s1-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #555;
+    opacity: 0;
+    animation: fadeIn 0.8s ease 1.2s forwards;
+  }
+
+  .s1-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #555;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* ===== SLIDE 02 ===== */
+  #s2 {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 64px;
+    background: #000000;
+  }
+
+  #s2-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  #s2::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+
+  #s2 > *:not(#s2-canvas) { position: relative; z-index: 2; }
+
+  .s2-title {
+    font-size: clamp(40px, 7vw, 80px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
     line-height: 1.05;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
     opacity: 0;
-    transform: translateX(-30px);
-    transition: opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s;
+    transform: translateY(35px);
+    transition: opacity 0.9s ease 0.1s, transform 0.9s ease 0.1s;
   }
-  .s3-title.visible { opacity: 1; transform: translateX(0); }
+  .s2-title.visible { opacity: 1; transform: translateY(0); }
 
-  .s3-subtitle {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--gray);
-    line-height: 1.7;
+  .s2-subtitle {
+    font-size: clamp(16px, 2vw, 24px);
+    font-weight: 500;
+    color: #ffffff;
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(20px);
     transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
   }
-  .s3-subtitle.visible { opacity: 1; transform: translateX(0); }
+  .s2-subtitle.visible { opacity: 1; transform: translateY(0); }
 
-  .s3-right {}
-
-  .s3-point {
-    padding: 28px 0;
-    border-bottom: 0.5px solid var(--border);
-    opacity: 0;
-    transform: translateX(20px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-  .s3-point.visible { opacity: 1; transform: translateX(0); }
-  .s3-point:first-child { border-top: 0.5px solid var(--border); }
-
-  .s3-point-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--gray);
-    margin-bottom: 8px;
+  /* ===== SLIDES 03, 04, 05 ===== */
+  .split-slide {
+    align-items: stretch;
+    padding: 80px 80px;
+    gap: 60px;
   }
 
-  .s3-point-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
 
-  .s3-point-body {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--gray);
-    line-height: 1.6;
-  }
-
-  /* Slide 4 — CTA */
-  #s4 {
-    background: var(--black);
-    justify-content: space-between;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .s4-top {
+  .split-left {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-  }
-
-  .s4-name {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(60px, 12vw, 140px);
-    line-height: 0.95;
     opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 1s ease 0.1s, transform 1s ease 0.1s;
+    transform: translateX(-35px);
+    transition: opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s;
   }
-  .s4-name.visible { opacity: 1; transform: translateY(0); }
+  .split-left.visible { opacity: 1; transform: translateX(0); }
 
-  .s4-name em {
-    font-style: italic;
-    color: var(--gray);
-  }
-
-  .s4-meta {
-    display: flex;
-    gap: 48px;
-    margin-top: 48px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
-  }
-  .s4-meta.visible { opacity: 1; transform: translateY(0); }
-
-  .s4-meta-item {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--gray);
-    line-height: 1.6;
-  }
-
-  .s4-meta-item strong {
-    display: block;
-    color: var(--white);
-    font-size: 14px;
-    margin-bottom: 4px;
-  }
-
-  .s4-cta {
-    margin-top: 80px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s;
-    width: fit-content;
-    padding: 24px 40px;
-    border: 0.5px solid var(--white);
-    cursor: none;
-  }
-  .s4-cta.visible { opacity: 1; transform: translateY(0); }
-  .s4-cta:hover { background: var(--white); color: var(--black); }
-  .s4-cta:hover .cta-arrow { transform: translateX(8px); }
-  .s4-cta { transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s, background 0.2s, color 0.2s; }
-
-  .cta-text {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-
-  .cta-arrow {
-    font-size: 24px;
-    transition: transform 0.2s ease;
+  .split-stat {
+    font-size: clamp(72px, 13vw, 160px);
+    font-weight: 600;
     line-height: 1;
+    letter-spacing: -0.05em;
+    margin-bottom: 28px;
   }
 
-  /* Noise overlay for texture */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0.4;
+  .split-desc {
+    font-size: clamp(15px, 1.5vw, 20px);
+    font-weight: 600;
+    color: #999;
+    line-height: 1.6;
+    max-width: 400px;
   }
 
-  /* Scroll indicator */
-  .scroll-hint {
-    position: absolute;
-    bottom: 40px;
-    left: 48px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--gray);
-    letter-spacing: 0.1em;
+  .split-desc span {
+    font-weight: 400;
+    color: #666;
+    display: block;
+  }
+
+  .split-logo {
+    margin-top: 24px;
+    padding-top: 0;
     opacity: 0;
-    animation: fadeInUp 0.8s ease 1.2s forwards;
+    transform: translateY(10px);
+    transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
+  }
+  .split-logo.visible { opacity: 1; transform: translateY(0); }
+  .split-logo img { height: 64px; object-fit: contain; }
+
+  .split-right {
+    flex: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(35px);
+    transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
+  }
+  .split-right.visible { opacity: 1; transform: translateX(0); }
+
+  .split-right img {
+    width: 100%;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 8px;
   }
 
-  .scroll-dot {
-    width: 6px; height: 6px;
+  /* ===== SLIDE 06 ===== */
+  #s6 {
+    align-items: center;
+    padding: 64px 80px;
+    gap: 80px;
+    background:
+      radial-gradient(ellipse 60% 80% at 5% 10%, rgba(179,226,154,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 50% at 15% 30%, rgba(179,226,154,0.25) 0%, transparent 45%),
+      #000000;
+  }
+
+  .s6-left {
+    flex: 1;
+    text-align: left;
+    opacity: 0;
+    transform: translateX(-35px);
+    transition: opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s;
+  }
+  .s6-left.visible { opacity: 1; transform: translateX(0); }
+
+  .s6-title {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+    margin-bottom: 48px;
+  }
+
+  .s6-sub {
+    font-size: clamp(14px, 1.4vw, 18px);
+    font-weight: 500;
+    color: #888;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 28px;
+    padding-left: 20px;
+    border-left: 2px solid rgba(255,255,255,0.15);
+  }
+
+  .s6-right {
+    flex: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(35px);
+    transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
+  }
+  .s6-right.visible { opacity: 1; transform: translateX(0); }
+
+  .s6-right img {
+    width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  /* ===== NAV DOTS ===== */
+  .side-nav {
+    position: fixed;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 100;
+  }
+
+  .side-nav a {
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--gray);
-    animation: pulse 2s ease-in-out infinite;
+    background: rgba(255,255,255,0.15);
+    display: block;
+    transition: background 0.3s, transform 0.3s;
   }
 
+  .side-nav a.active {
+    background: #fff;
+    transform: scale(1.5);
+  }
+
+  /* ===== ANIMATIONS ===== */
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    50% { opacity: 0.25; }
   }
 
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Background grid for s3 */
-  #s3::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-  }
-
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
-    nav { padding: 20px 24px; }
-    section { padding: 100px 24px 60px; }
-    .s1-sub { grid-template-columns: 1fr; }
-    .companies-grid { grid-template-columns: 1fr; }
-    .company-card { border-right: none; border-bottom: 0.5px solid #ddd; }
-    .s3-layout { grid-template-columns: 1fr; gap: 40px; }
-    .s4-meta { flex-direction: column; gap: 24px; }
-    .scroll-hint { left: 24px; }
+    #s1 { padding: 32px 24px; }
+    .s1-center { flex-direction: column-reverse; gap: 32px; }
+    .s1-left { max-width: 100%; }
+
+    .split-slide, #s6 {
+      flex-direction: column;
+      padding: 48px 24px;
+      gap: 40px;
+    }
+
+    .side-nav { display: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-
-<nav>
-  <div class="logo">JESÚS → NODI</div>
-  <div class="nav-num">UNA PROPUESTA</div>
+<nav class="side-nav">
+  <a href="#s1" data-slide="s1"></a>
+  <a href="#s2" data-slide="s2"></a>
+  <a href="#s3" data-slide="s3"></a>
+  <a href="#s4" data-slide="s4"></a>
+  <a href="#s5" data-slide="s5"></a>
+  <a href="#s6" data-slide="s6"></a>
 </nav>
 
-<!-- SLIDE 1: THE HOOK -->
+<!-- SLIDE 01 -->
 <section id="s1">
-  <div class="slide-num" data-animate>01 — EL PROBLEMA</div>
-
-  <div class="big-num" data-animate>
-    $50,000<span>/mes</span>
+  <canvas id="s1-canvas"></canvas>
+  <div class="s1-logo" data-animate>
+    <img src="Nodi LOGO.png" alt="Nodi">
   </div>
 
-  <div class="h-line" data-animate></div>
-
-  <div class="s1-sub" data-animate>
-    <div class="s1-label">
-      Cada búsqueda en Nodi llama a Vertex AI.<br>
-      Input tokens + output tokens.<br>
-      Cada. Búsqueda.
+  <div class="s1-center">
+    <div class="s1-left" data-animate>
+      <div class="s1-title" data-animate>Lorem Ipsum</div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
     </div>
-    <div class="s1-statement">
-      A 1M búsquedas al mes,<br>el costo de API se come el margen.
+    <div class="s1-right" data-animate>
+      <img src="Nodi 3D.png" alt="Nodi 3D">
     </div>
   </div>
 
-  <div class="scroll-hint">
-    <div class="scroll-dot"></div>
+  <div class="s1-bottom">
+    <div class="s1-dot"></div>
     scroll
   </div>
 </section>
 
-<!-- SLIDE 2: COMPANIES -->
+<!-- SLIDE 02 -->
 <section id="s2">
-  <div class="slide-num" data-animate style="color:#999;">02 — LA REFERENCIA</div>
+  <canvas id="s2-canvas"></canvas>
+  <div class="s2-title" data-animate data-typewrite>Top Tech Companies</div>
+  <div class="s2-subtitle" data-animate data-typewrite data-type-delay="800">Utilize Machine Learning for recommendation</div>
+</section>
 
-  <div class="companies-header" data-animate>LAS EMPRESAS QUE DOMINAN EL MATCHING NO USAN LLMS</div>
-
-  <div class="companies-grid" data-animate>
-    <div class="company-card">
-      <div class="company-name">Spotify</div>
-      <div class="company-stat">600M</div>
-      <div class="company-desc">usuarios<br>recomendaciones en milisegundos<br>sin una sola llamada a API externa</div>
-    </div>
-    <div class="company-card">
-      <div class="company-name">Netflix</div>
-      <div class="company-stat">$1B</div>
-      <div class="company-desc">ahorrados / año<br>en reducción de churn<br>con ML propio</div>
-    </div>
-    <div class="company-card">
-      <div class="company-name">LinkedIn</div>
-      <div class="company-stat">1B+</div>
-      <div class="company-desc">conexiones sugeridas<br>con modelo de embeddings<br>sin tokens, sin APIs</div>
-    </div>
+<!-- SLIDE 03 — SPOTIFY -->
+<section id="s3" class="split-slide">
+  <div class="split-left" data-animate>
+    <div class="split-stat" data-count-to="600" data-count-suffix="M">0</div>
+    <div class="split-desc">recomendations in milliseconds.<span>not a single external API call.</span></div>
+    <div class="split-logo" data-animate><img src="logo spoti.png" alt="Spotify"></div>
   </div>
-
-  <div class="s2-footer" data-animate>
-    <div class="s2-line"></div>
-    <div class="s2-statement">Usan matemática. No APIs externas.</div>
-    <div class="s2-line"></div>
+  <div class="split-right" data-animate>
+    <img src="spotify.png" alt="Spotify">
   </div>
 </section>
 
-<!-- SLIDE 3: PROPOSAL -->
-<section id="s3">
-  <div class="slide-num" data-animate>03 — LA PROPUESTA</div>
-
-  <div class="s3-layout">
-    <div class="s3-left">
-      <div class="s3-title" data-animate>La propuesta<br>para Nodi</div>
-      <div class="s3-subtitle" data-animate>
-        Un modelo de ML entrenado<br>
-        con los datos propios de Nodi.<br><br>
-        Mismo resultado de matching,<br>
-        costo de API casi cero.
-      </div>
-    </div>
-
-    <div class="s3-right">
-      <div class="s3-point" data-animate data-delay="0.2">
-        <div class="s3-point-num">01</div>
-        <div class="s3-point-title">Embeddings</div>
-        <div class="s3-point-body">Candidatos y empresas como vectores matemáticos. Similaridad exacta, sin alucinaciones.</div>
-      </div>
-      <div class="s3-point" data-animate data-delay="0.35">
-        <div class="s3-point-num">02</div>
-        <div class="s3-point-title">Escala lineal</div>
-        <div class="s3-point-body">El costo de inferencia es fijo. No crece con el volumen de búsquedas.</div>
-      </div>
-      <div class="s3-point" data-animate data-delay="0.5">
-        <div class="s3-point-num">03</div>
-        <div class="s3-point-title">Propio y mejora solo</div>
-        <div class="s3-point-body">El modelo aprende de los matches de Nodi. Con cada contratación se vuelve más preciso.</div>
-      </div>
-    </div>
+<!-- SLIDE 04 — NETFLIX -->
+<section id="s4" class="split-slide">
+  <div class="split-left" data-animate>
+    <div class="split-stat" data-count-to="1.2" data-count-prefix="$" data-count-suffix="B" data-count-decimals="1">0</div>
+    <div class="split-desc">saved/year in churn reduction.<span>with in-house Machine Learning.</span></div>
+    <div class="split-logo" data-animate><img src="net logo.png" alt="Netflix"></div>
+  </div>
+  <div class="split-right" data-animate>
+    <img src="netflix.png" alt="Netflix">
   </div>
 </section>
 
-<!-- SLIDE 4: CTA -->
-<section id="s4">
-  <div class="slide-num" data-animate>04 — LA PROPUESTA</div>
+<!-- SLIDE 05 — YOUTUBE -->
+<section id="s5" class="split-slide">
+  <div class="split-left" data-animate>
+    <div class="split-stat" data-count-to="70" data-count-prefix="+" data-count-suffix="%">0</div>
+    <div class="split-desc">of videos come from direct<span>recommendation.</span></div>
+    <div class="split-logo" data-animate><img src="yutu logo.png" alt="YouTube"></div>
+  </div>
+  <div class="split-right" data-animate>
+    <img src="youtube.png" alt="YouTube">
+  </div>
+</section>
 
-  <div class="s4-top">
-    <div class="s4-name" data-animate>
-      Soy<br>Jesús.<br><em>Data<br>Scientist.</em>
-    </div>
-
-    <div class="s4-meta" data-animate>
-      <div class="s4-meta-item">
-        <strong>Usuario beta</strong>
-        He probado el agente.<br>Entiendo el producto.
-      </div>
-      <div class="s4-meta-item">
-        <strong>El approach</strong>
-        ML propio, sin APIs externas.<br>Resolví esto matemáticamente.
-      </div>
-      <div class="s4-meta-item">
-        <strong>El timing</strong>
-        Prototipo funcional<br>en 2–3 semanas.
-      </div>
-    </div>
-
-    <div class="s4-cta" data-animate>
-      <div class="cta-text">¿Le damos 15 minutos esta semana?</div>
-      <div class="cta-arrow">→</div>
-    </div>
+<!-- SLIDE 06 — RECSYS -->
+<section id="s6">
+  <div class="s6-left" data-animate>
+    <div class="s6-title">RecSys built for Nodi</div>
+    <div class="s6-sub">Candidate and Company profiles as vectors — mathematical search instead of LLM reasoning.</div>
+    <div class="s6-sub">Better matching results, and more scalable. Near 0 API cost.</div>
+  </div>
+  <div class="s6-right" data-animate>
+    <img src="vector.png" alt="Vector">
   </div>
 </section>
 
 <script>
-const cursor = document.getElementById('cursor');
-document.addEventListener('mousemove', e => {
-  cursor.style.left = e.clientX - 6 + 'px';
-  cursor.style.top = e.clientY - 6 + 'px';
-});
-
-document.querySelectorAll('a, button, .s4-cta, .company-card').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(3)'; });
-  el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; });
-});
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const delay = el.dataset.delay ? parseFloat(el.dataset.delay) * 1000 : 0;
-      setTimeout(() => el.classList.add('visible'), delay);
-    }
+    if (entry.isIntersecting) entry.target.classList.add('visible');
   });
 }, { threshold: 0.15 });
 
 document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section');
+const dots = document.querySelectorAll('.side-nav a');
+
+const dotObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      dots.forEach(d => d.classList.remove('active'));
+      const dot = document.querySelector(`.side-nav a[data-slide="${entry.target.id}"]`);
+      if (dot) dot.classList.add('active');
+    }
+  });
+}, { threshold: 0.5 });
+
+sections.forEach(s => dotObs.observe(s));
+
+// Canvas gradient for Slide 01
+(function() {
+  const canvas = document.getElementById('s1-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const blobs = [
+    { x: 0.3, y: 0.7, r: 0.4, vx: 0.0003, vy: -0.0002, alpha: 0.45 },
+    { x: 0.7, y: 0.2, r: 0.35, vx: -0.0004, vy: 0.0003, alpha: 0.35 },
+    { x: 0.5, y: 0.5, r: 0.3, vx: 0.0002, vy: 0.0004, alpha: 0.2 },
+  ];
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const b of blobs) {
+      b.x += b.vx;
+      b.y += b.vy;
+      if (b.x < 0.1 || b.x > 0.9) b.vx *= -1;
+      if (b.y < 0.1 || b.y > 0.9) b.vy *= -1;
+
+      const cx = b.x * canvas.width;
+      const cy = b.y * canvas.height;
+      const radius = b.r * Math.max(canvas.width, canvas.height);
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grad.addColorStop(0, `rgba(179, 226, 154, ${b.alpha})`);
+      grad.addColorStop(1, 'rgba(179, 226, 154, 0)');
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+})();
+
+// Canvas gradient for Slide 02
+(function() {
+  const canvas = document.getElementById('s2-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const blobs = [
+    { x: 0.3, y: 0.7, r: 0.4, vx: 0.0003, vy: -0.0002, alpha: 0.45 },
+    { x: 0.7, y: 0.2, r: 0.35, vx: -0.0004, vy: 0.0003, alpha: 0.35 },
+    { x: 0.5, y: 0.5, r: 0.3, vx: 0.0002, vy: 0.0004, alpha: 0.2 },
+  ];
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const b of blobs) {
+      b.x += b.vx;
+      b.y += b.vy;
+      if (b.x < 0.1 || b.x > 0.9) b.vx *= -1;
+      if (b.y < 0.1 || b.y > 0.9) b.vy *= -1;
+      const cx = b.x * canvas.width;
+      const cy = b.y * canvas.height;
+      const radius = b.r * Math.max(canvas.width, canvas.height);
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grad.addColorStop(0, `rgba(179, 226, 154, ${b.alpha})`);
+      grad.addColorStop(1, 'rgba(179, 226, 154, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+})();
+
+// Count-up animation
+function animateCount(el) {
+  if (el.dataset.counted) return;
+  el.dataset.counted = 'true';
+
+  const target = parseFloat(el.dataset.countTo);
+  const prefix = el.dataset.countPrefix || '';
+  const suffix = el.dataset.countSuffix || '';
+  const decimals = parseInt(el.dataset.countDecimals) || 0;
+  const duration = 1800;
+  const start = performance.now();
+
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = (target * ease).toFixed(decimals);
+    el.textContent = prefix + current + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) animateCount(entry.target);
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('[data-count-to]').forEach(el => countObserver.observe(el));
+
+// Typewriter animation
+const typeEls = document.querySelectorAll('[data-typewrite]');
+typeEls.forEach(el => {
+  el.dataset.fullText = el.textContent;
+  el.textContent = '';
+});
+
+const typeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !entry.target.dataset.typed) {
+      entry.target.dataset.typed = 'true';
+      const text = entry.target.dataset.fullText;
+      const delay = parseInt(entry.target.dataset.typeDelay) || 0;
+      let i = 0;
+      setTimeout(() => {
+        const interval = setInterval(() => {
+          entry.target.textContent = text.slice(0, ++i);
+          if (i >= text.length) clearInterval(interval);
+        }, 40);
+      }, delay);
+    }
+  });
+}, { threshold: 0.5 });
+
+typeEls.forEach(el => typeObserver.observe(el));
 </script>
 </body>
 </html>
